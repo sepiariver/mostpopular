@@ -30,9 +30,9 @@
             key="data"
             dbtype="varchar"
             precision="16378"
-            phptype="string"
-            default="" />
-            
+            phptype="json"
+            default="[]" />
+
         <index alias="resource" name="resource" primary="false" unique="false" type="BTREE">
             <column key="resource" length="" collation="A" null="false" />
         </index>

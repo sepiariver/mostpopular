@@ -4,14 +4,14 @@
  */
 $xpdo_meta_map['MPPageViews']= array (
   'package' => 'mostpopular',
-  'version' => '0.1',
+  'version' => '1.1',
   'table' => 'mp_pageviews',
   'extends' => 'xPDOSimpleObject',
   'fields' => 
   array (
     'resource' => NULL,
     'datetime' => 'CURRENT_TIMESTAMP',
-    'data' => '',
+    'data' => '[]',
   ),
   'fieldMeta' => 
   array (
@@ -37,8 +37,43 @@ $xpdo_meta_map['MPPageViews']= array (
     array (
       'dbtype' => 'varchar',
       'precision' => '16378',
-      'phptype' => 'string',
-      'default' => '',
+      'phptype' => 'json',
+      'default' => '[]',
+    ),
+  ),
+  'indexes' => 
+  array (
+    'resource' => 
+    array (
+      'alias' => 'resource',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'resource' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
+    ),
+    'datetime' => 
+    array (
+      'alias' => 'datetime',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'datetime' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
     ),
   ),
 );
