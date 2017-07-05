@@ -1,0 +1,26 @@
+{
+    "name": "MostPopular",
+    "lowCaseName": "mostpopular",
+    "description": "Track page hits and most popular Resources in MODX.",
+    "author": "YJ Tso",
+    "version": "0.0.1-dev1",
+    "package": {
+        "elements": {
+            "snippets": [{
+                "name": "mpLogPageView",
+                "file": "mplogpageview.snippet.php"
+            }, {
+                "name": "mpResources",
+                "file": "mpresources.snippet.php"
+            }]
+        },
+        "systemSettings": [{
+            "key": "allowed_data_keys",
+            "value": ""
+        }]
+    },
+    "database": {
+        "tables": ["MPPageViews"]
+    }
+
+}
