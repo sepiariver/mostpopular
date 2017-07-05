@@ -17,6 +17,9 @@
         "systemSettings": [{
             "key": "allowed_data_keys",
             "value": ""
+        }, {
+            "key": "session_var_key",
+            "value": "mpViewed"
         }]
     },
     "database": {

@@ -27,46 +27,68 @@
 $usePostVars = $modx->getOption('usePostVars', $scriptProperties, true);
 $sessionVar = $modx->getOption('sessionVar', $scriptProperties, $modx->getOption('mostpopular.session_var_key'));
 $resource = ($usePostVars) ? (int) $modx->getOption('resource', $_POST, 0, true) : (int) $modx->getOption('resource', $scriptProperties, $modx->resource->get('id'), true);
+/* return early if invalid resource ID or
+ * session variable exists for resource ID or
+ * multiple requests per second
+ */
 if ($resource < 1) return;
-if (isset($_SESSION[$sessionVar][$resource])) return;
+if (!empty($sessionVar)) {
+    if (isset($_SESSION[$sessionVar][$resource])) return;
+    if ($_SESSION[$sessionVar]['last_view'] == time()) return;
+}
+
+/* required setting allowedDataKeys if usePostVars is true */
 $allowedDataKeys = $modx->getOption('allowedDataKeys', $scriptProperties, $modx->getOption('mostpopular.allowed_data_keys'));
+/* ability to pass logData to the Snippet call */
 $logData = $modx->fromJSON($modx->getOption('logData', $scriptProperties, ''));
 if (!is_array($logData)) $logData = array();
 
-// Paths
+// PATHS
 $mpPath = $modx->getOption('mostpopular.core_path', null, $modx->getOption('core_path') . 'components/mostpopular/');
 $mpPath .= 'model/mostpopular/';
 
-// Get Class
+// GET SERVICE
 if (file_exists($mpPath . 'mostpopular.class.php')) $mostpopular = $modx->getService('mostpopular', 'MostPopular', $mpPath, $scriptProperties);
 if (!($mostpopular instanceof MostPopular)) {
     $modx->log(modX::LOG_LEVEL_ERROR, '[mpLogPageView] could not load the required MostPopular class!');
     return;
 }
 
-// Load page view object
+// PAGE VIEW OBJECT
 $pageview = $modx->newObject('MPPageViews');
 if (!$pageview) {
     $modx->log(modX::LOG_LEVEL_ERROR, '[mpLogPageView] could not create MPPageViews object!');
     return;
 }
 
-// Format data
+// FORMAT DATA
 $pv = array(
     'resource' => $resource,
-    'data' => $logData,
+    'data' => [],
 );
 if (!empty($allowedDataKeys)) {
+    // Only pass through allowedDataKeys
     $allowedDataKeys = array_flip($mostpopular->explodeAndClean($allowedDataKeys));
-    if ($usePostVars) $pv['data'] = array_intersect_key($_POST, $allowedDataKeys);
+    $data = ($usePostVars) ? $_POST : $logData;
+    $pv['data'] = array_intersect_key($data, $allowedDataKeys);
+} else {
+    // Only skip allowedDataKeys if using internal data source
+    $pv['data'] = $logData;
+}
+// Never allow nested arrays
+foreach ($pv['data'] as $k => $v) {
+    $pv['data'][$k] = (is_array($v)) ? '' : (string) $v;
 }
 
 $pageview->fromArray($pv);
 
-// Attempt to save
+// LOG PAGE VIEW
 if ($pageview->save()) {
     $success['success'] = true;
-    $_SESSION[$sessionVar][$resource] = true;
+    if (!empty($sessionVar)) {
+        $_SESSION[$sessionVar][$resource] = true;
+        $_SESSION[$sessionVar]['last_view'] = time();
+    }
 } else {
     $success['message'] = 'Unknown error. The pageview could not be saved.';
 }
