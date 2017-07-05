@@ -5,7 +5,7 @@
     platform="mysql"
     defaultEngine="MyISAM"
     phpdoc-package="mostpopular"
-    version="0.1">
+    version="1.1">
     <object
         class="MPPageViews"
         table="mp_pageviews"
@@ -32,5 +32,12 @@
             precision="16378"
             phptype="string"
             default="" />
+            
+        <index alias="resource" name="resource" primary="false" unique="false" type="BTREE">
+            <column key="resource" length="" collation="A" null="false" />
+        </index>
+        <index alias="datetime" name="datetime" primary="false" unique="false" type="BTREE">
+            <column key="datetime" length="" collation="A" null="false" />
+        </index>
     </object>
 </model>
