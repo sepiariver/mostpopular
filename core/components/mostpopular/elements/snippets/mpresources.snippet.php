@@ -27,6 +27,8 @@
 $separator = $modx->getOption('separator', $scriptProperties, ',');
 $limit = (int) $modx->getOption('limit', $scriptProperties, 20);
 $sortDir = (strtoupper($modx->getOption('sortDir', $scriptProperties, 'DESC')) === 'ASC') ? 'ASC' : 'DESC';
+$fromDate = strtotime($modx->getOption('fromDate', $scriptProperties, ''));
+$toDate = strtotime($modx->getOption('toDate', $scriptProperties, 'now'));
 
 // PATHS
 $mpPath = $modx->getOption('mostpopular.core_path', null, $modx->getOption('core_path') . 'components/mostpopular/');
@@ -39,15 +41,24 @@ if (!($mostpopular instanceof MostPopular)) {
     return;
 }
 
+// DATETIME
+// normalize bad inputs
+if ($fromDate === false) $fromDate = strtotime('1970-01-01');
+if ($toDate === false) $toDate = time();
+// convert to string for mysql
+$fromDate = strftime("%F %T", $fromDate);
+$toDate = strftime("%F %T", $toDate);
+
+// QUERY
 $output = '';
 $stmt = $modx->query("
     SELECT resource, COUNT(*) AS RESCOUNT
     FROM modx_mp_pageviews
+    WHERE datetime >= '" . $fromDate . "' AND datetime < '" . $toDate . "'
     GROUP BY resource
     ORDER BY RESCOUNT " . $sortDir . "
     LIMIT " . $limit . "
 ");
-
 if ($stmt) {
     $rows = $stmt->fetchAll(PDO::FETCH_COLUMN);
     $output .= implode($separator, $rows);

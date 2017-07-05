@@ -20,6 +20,9 @@
         }, {
             "key": "session_var_key",
             "value": "mpViewed"
+        }, {
+            "key": "session_timeout",
+            "value": 5
         }]
     },
     "database": {
