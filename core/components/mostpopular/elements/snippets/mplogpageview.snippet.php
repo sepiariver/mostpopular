@@ -66,7 +66,6 @@ if (!$pageview) {
 // FORMAT DATA
 $pv = array(
     'resource' => $resource,
-    'data' => [],
 );
 if (!empty($allowedDataKeys)) {
     // Only pass through allowedDataKeys
@@ -75,11 +74,13 @@ if (!empty($allowedDataKeys)) {
     $pv['data'] = array_intersect_key($data, $allowedDataKeys);
 } else {
     // Only skip allowedDataKeys if using internal data source
-    $pv['data'] = $logData;
+    if (!empty($logData)) $pv['data'] = $logData;
 }
 // Never allow nested arrays
-foreach ($pv['data'] as $k => $v) {
-    $pv['data'][$k] = (is_array($v)) ? '' : (string) $v;
+if (isset($pv['data'])) {
+    foreach ($pv['data'] as $k => $v) {
+        $pv['data'][$k] = (is_array($v)) ? '' : (string) $v;
+    }
 }
 
 $pageview->fromArray($pv);
