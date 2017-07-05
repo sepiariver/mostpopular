@@ -29,12 +29,12 @@ $sessionVar = $modx->getOption('sessionVar', $scriptProperties, $modx->getOption
 $resource = ($usePostVars) ? (int) $modx->getOption('resource', $_POST, 0, true) : (int) $modx->getOption('resource', $scriptProperties, $modx->resource->get('id'), true);
 /* return early if invalid resource ID or
  * session variable exists for resource ID or
- * multiple requests per second
+ * multiple requests per 1.5 second
  */
 if ($resource < 1) return;
 if (!empty($sessionVar)) {
     if (isset($_SESSION[$sessionVar][$resource])) return;
-    if ($_SESSION[$sessionVar]['last_view'] == time()) return;
+    if ($_SESSION[$sessionVar]['last_view'] === time()) return;
 }
 
 /* required setting allowedDataKeys if usePostVars is true */
