@@ -28,6 +28,8 @@ $separator = $modx->getOption('separator', $scriptProperties, ',');
 $toPlaceholder = $modx->getOption('toPlaceholder', $scriptProperties, '');
 /* only fetch pageviews for a specific Resource ID. cast for cleaning. */
 $resource = (int) $modx->getOption('resource', $scriptProperties, 0, true);
+/* setting tpl fetches all columns for templating */
+$tpl = $modx->getOption('tpl', $scriptProperties, '');
 /* cast for cleaning */
 $limit = (int) $modx->getOption('limit', $scriptProperties, 20);
 /* normalize sortDir */
@@ -62,17 +64,27 @@ $resWhere = ($resource > 0) ? " AND resource = {$resource} " : '';
 // QUERY
 $output = '';
 $stmt = $modx->query("
-    SELECT resource, COUNT(*) AS RESCOUNT
+    SELECT resource, COUNT(*) AS views, datetime, data
     FROM modx_mp_pageviews
     WHERE datetime >= '" . $fromDate . "' AND datetime < '" . $toDate . "'" . $resWhere . "
     GROUP BY resource
-    ORDER BY RESCOUNT " . $sortDir . "
+    ORDER BY views " . $sortDir . "
     LIMIT " . $limit . "
 ");
 if ($stmt) {
-    $col = (empty($resWhere)) ? 0 : 1;
-    $rows = $stmt->fetchAll(PDO::FETCH_COLUMN, $col);
-    $output .= implode($separator, $rows);
+    if (empty($tpl)) {
+        $col = (empty($resWhere)) ? 0 : 1;
+        $rows = $stmt->fetchAll(PDO::FETCH_COLUMN, $col);
+        $output .= implode($separator, $rows);
+    } else {
+        $output = [];
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($rows as $row) {
+            $row['data'] = $modx->fromJSON($row['data']);
+            $output[] = $modx->getChunk($tpl, $row);
+        }
+        $output = implode($separator, $output);
+    }
 }
 
 // RETURN
