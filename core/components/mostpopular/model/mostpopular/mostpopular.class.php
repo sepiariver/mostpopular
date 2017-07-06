@@ -57,7 +57,7 @@ class MostPopular
         ), $options);
 
 
-        $this->modx->addPackage('MostPopular', $this->options['modelPath'], $this->modx->config['table_prefix']);
+        $this->modx->addPackage('mostpopular', $this->options['modelPath'], $this->modx->config['table_prefix']);
         //$this->modx->lexicon->load('MostPopular:default');
 
     }
