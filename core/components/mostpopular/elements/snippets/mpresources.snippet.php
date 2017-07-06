@@ -57,34 +57,70 @@ if ($toDate === false) $toDate = time();
 $fromDate = strftime("%F %T", $fromDate);
 $toDate = strftime("%F %T", $toDate);
 
-// RESOURCE CONDITION
+// MODE
 $resource = abs($resource);
-$resWhere = ($resource > 0) ? " AND resource = {$resource} " : '';
+$mode = (empty($tpl)) ? '0' : '1';
+$mode .= ($resource > 0) ? '1' : '0';
 
-// QUERY
-$output = '';
-$stmt = $modx->query("
-    SELECT resource, COUNT(*) AS views, datetime, data
-    FROM modx_mp_pageviews
-    WHERE datetime >= '" . $fromDate . "' AND datetime < '" . $toDate . "'" . $resWhere . "
-    GROUP BY resource
-    ORDER BY views " . $sortDir . "
-    LIMIT " . $limit . "
-");
-if ($stmt) {
-    if (empty($tpl)) {
-        $col = (empty($resWhere)) ? 0 : 1;
-        $rows = $stmt->fetchAll(PDO::FETCH_COLUMN, $col);
-        $output .= implode($separator, $rows);
-    } else {
-        $output = [];
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        foreach ($rows as $row) {
-            $row['data'] = $modx->fromJSON($row['data']);
-            $output[] = $modx->getChunk($tpl, $row);
+// OUTPUT 
+switch ($mode) {
+    case '11':
+        // Fetch all page views for a specific Resource sorted by datetime
+        $stmt = $modx->query("
+            SELECT *
+            FROM modx_mp_pageviews
+            WHERE datetime >= '" . $fromDate . "' AND datetime < '" . $toDate . "' AND resource = " . $resource . "
+            ORDER BY datetime " . $sortDir . "
+            LIMIT " . $limit . "
+        ");
+        // Template each page view with a Chunk
+        if ($stmt) {
+            $output = [];
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($rows as $row) {
+                $row['data'] = $modx->fromJSON($row['data']);
+                $output[] = $modx->getChunk($tpl, $row);
+            }
+            $output = implode($separator, $output);
         }
-        $output = implode($separator, $output);
-    }
+    case '10':
+        // Fetch a set of resource IDs ordered by number of page views
+        $stmt = $modx->query("
+            SELECT resource, COUNT(*) AS views
+            FROM modx_mp_pageviews
+            WHERE datetime >= '" . $fromDate . "' AND datetime < '" . $toDate . "'
+            GROUP BY resource
+            ORDER BY views " . $sortDir . "
+            LIMIT " . $limit . "
+        ");
+        // Template each Resource and view count with a Chunk
+        if ($stmt) {
+            $output = [];
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($rows as $row) {
+                $output[] = $modx->getChunk($tpl, $row);
+            }
+            $output = implode($separator, $output);
+        }
+    case '01':
+        // No tpl and specified Resource means we just return the number of page views for the Resource
+        $output = $modx->getCount('MPPageViews', array('resource' => $resource));
+    case '00':
+    default:
+        // Fetch a set of resource IDs ordered by number of page views
+        $stmt = $modx->query("
+            SELECT resource, COUNT(*) AS views
+            FROM modx_mp_pageviews
+            WHERE datetime >= '" . $fromDate . "' AND datetime < '" . $toDate . "'
+            GROUP BY resource
+            ORDER BY views " . $sortDir . "
+            LIMIT " . $limit . "
+        ");
+        // If no tpl was specified, we return a comma-separated list
+        if ($stmt) {
+            $rows = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+            $output = implode($separator, $rows);
+        }
 }
 
 // RETURN
