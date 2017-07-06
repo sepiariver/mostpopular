@@ -25,8 +25,12 @@
 
 // OPTIONS
 $separator = $modx->getOption('separator', $scriptProperties, ',');
+$toPlaceholder = $modx->getOption('toPlaceholder', $scriptProperties, '');
+/* cast for cleaning */
 $limit = (int) $modx->getOption('limit', $scriptProperties, 20);
+/* normalize sortDir */
 $sortDir = (strtoupper($modx->getOption('sortDir', $scriptProperties, 'DESC')) === 'ASC') ? 'ASC' : 'DESC';
+/* these get processed later, before the query */
 $fromDate = strtotime($modx->getOption('fromDate', $scriptProperties, ''));
 $toDate = strtotime($modx->getOption('toDate', $scriptProperties, 'now'));
 
@@ -42,10 +46,10 @@ if (!($mostpopular instanceof MostPopular)) {
 }
 
 // DATETIME
-// normalize bad inputs
+/* normalize bad inputs */
 if ($fromDate === false) $fromDate = strtotime('1970-01-01');
 if ($toDate === false) $toDate = time();
-// convert to string for mysql
+/* convert to string for mysql */
 $fromDate = strftime("%F %T", $fromDate);
 $toDate = strftime("%F %T", $toDate);
 
@@ -61,6 +65,9 @@ $stmt = $modx->query("
 ");
 if ($stmt) {
     $rows = $stmt->fetchAll(PDO::FETCH_COLUMN);
-    $output .= implode($separator, $rows);
+    $output = implode($separator, $rows);
 }
-return $output;
+
+// RETURN
+if (empty($toPlaceholder)) return $output;
+$modx->setPlaceholder($toPlaceholder, $output);

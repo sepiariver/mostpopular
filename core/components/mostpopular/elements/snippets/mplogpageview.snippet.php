@@ -24,14 +24,20 @@
  **/
 
 // OPTIONS
+/* set to true for ajax pageview logging*/
 $usePostVars = $modx->getOption('usePostVars', $scriptProperties, true);
+/* if empty, no rate-limiting or session persistence happens. Make empty with caution! */
 $sessionVar = $modx->getOption('sessionVar', $scriptProperties, $modx->getOption('mostpopular.session_var_key'));
+/* in an effort to catch programmatic requests. 5 seconds seems reasonable. */
 $sessionTimeout = $modx->getOption('sessionTimeout', $scriptProperties, $modx->getOption('mostpopular.session_timeout', null, 5));
+/* POSTed resource falls back to Snippet property falls back to current Resource */
 $resource = ($usePostVars) ? (int) $modx->getOption('resource', $_POST, 0, true) : (int) $modx->getOption('resource', $scriptProperties, $modx->resource->get('id'), true);
+/* response is returned (as JSON), otherwise '' */
+$respond = $modx->getOption('respond', $scriptProperties, true);
 
 /* return early if invalid resource ID or
  * session variable exists for resource ID or
- * multiple requests per 1.5 second
+ * multiple requests within sessionTimeout period
  */
 if ($resource < 1) return;
 if (!empty($sessionVar)) {
@@ -39,9 +45,9 @@ if (!empty($sessionVar)) {
     if ($_SESSION[$sessionVar]['last_view'] + abs($sessionTimeout) > time()) return;
 }
 
-/* required setting allowedDataKeys if usePostVars is true */
+/* setting allowedDataKeys is required, if usePostVars is true */
 $allowedDataKeys = $modx->getOption('allowedDataKeys', $scriptProperties, $modx->getOption('mostpopular.allowed_data_keys'));
-/* ability to pass logData to the Snippet call */
+/* ability to pass logData as a property of the Snippet call */
 $logData = $modx->fromJSON($modx->getOption('logData', $scriptProperties, ''));
 if (!is_array($logData)) $logData = array();
 
@@ -83,17 +89,22 @@ if (isset($pv['data'])) {
     }
 }
 
+// POPULATE OBJECT
 $pageview->fromArray($pv);
 
+// TINY RESPONSE
+$response = [];
+
 // LOG PAGE VIEW
-if ($pageview->save()) {
-    $success['success'] = true;
+if ($pageview->save()) { // pageview was logged
+    $response['success'] = true;
     if (!empty($sessionVar)) {
         $_SESSION[$sessionVar][$resource] = true;
         $_SESSION[$sessionVar]['last_view'] = time();
     }
 } else {
-    $success['message'] = 'Unknown error. The pageview could not be saved.';
+    $response['message'] = 'Unknown error. The pageview could not be saved.';
 }
 
-return $modx->toJSON($success);
+// RETURN 
+return ($respond) ? $modx->toJSON($response) : '';
