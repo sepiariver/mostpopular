@@ -26,6 +26,8 @@
 // OPTIONS
 $separator = $modx->getOption('separator', $scriptProperties, ',');
 $toPlaceholder = $modx->getOption('toPlaceholder', $scriptProperties, '');
+/* only fetch pageviews for a specific Resource ID. cast for cleaning. */
+$resource = (int) $modx->getOption('resource', $scriptProperties, 0, true);
 /* cast for cleaning */
 $limit = (int) $modx->getOption('limit', $scriptProperties, 20);
 /* normalize sortDir */
@@ -53,19 +55,24 @@ if ($toDate === false) $toDate = time();
 $fromDate = strftime("%F %T", $fromDate);
 $toDate = strftime("%F %T", $toDate);
 
+// RESOURCE CONDITION
+$resource = abs($resource);
+$resWhere = ($resource > 0) ? " AND resource = {$resource} " : '';
+
 // QUERY
 $output = '';
 $stmt = $modx->query("
     SELECT resource, COUNT(*) AS RESCOUNT
     FROM modx_mp_pageviews
-    WHERE datetime >= '" . $fromDate . "' AND datetime < '" . $toDate . "'
+    WHERE datetime >= '" . $fromDate . "' AND datetime < '" . $toDate . "'" . $resWhere . "
     GROUP BY resource
     ORDER BY RESCOUNT " . $sortDir . "
     LIMIT " . $limit . "
 ");
 if ($stmt) {
-    $rows = $stmt->fetchAll(PDO::FETCH_COLUMN);
-    $output = implode($separator, $rows);
+    $col = (empty($resWhere)) ? 0 : 1;
+    $rows = $stmt->fetchAll(PDO::FETCH_COLUMN, $col);
+    $output .= implode($separator, $rows);
 }
 
 // RETURN
