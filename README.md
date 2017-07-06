@@ -21,6 +21,8 @@ Install via MODX Extras Installer
 
 ### mpLogPageView
 
+Properties:
+
 'usePostVars' | (bool) | true | set to true for ajax pageview logging
 'sessionVar' | (string) | system setting | if empty, no rate-limiting or session persistence happens. Make empty with caution!
 'sessionTimeout' | (int) | 5 | in an effort to catch programmatic requests. 5 seconds seems reasonable. 0 disables but use with caution!
@@ -33,6 +35,8 @@ mpLogPageView returns early if an invalid resource ID is provided or a session v
 
 ### mpResources
 
+Properties:
+
 'separator' | (string) | empty string | output separator
 'toPlaceholder' | (string) | empty string | key of placeholder to which to send output instead of returning
 'resource' | (int) | 0 | only fetch page views for a specific Resource ID. cast for cleaning.
@@ -41,14 +45,6 @@ mpLogPageView returns early if an invalid resource ID is provided or a session v
 'sortDir' | (string) | 'DESC' | order by most page views or least page views
 'fromDate' | (string) | empty string | use English textual description of the start date, after which page views will be returned. See http://php.net/manual/en/function.strtotime.php for examples.
 'toDate' | (string) | 'now' | use English textual description of the end date, before which page views will be returned. See http://php.net/manual/en/function.strtotime.php for examples.
-
-#### Available Placeholders
-'resource' | (only without 'resource' property set) ID of viewed Resource
-'views' | total number of views tracked
-'datetime' | (only with 'resource' property set) datetime at which this particular view was tracked
-'data' | (only with 'resource' property set) use dot notation for placeholder keys, to access logged data properties. For example: `[[+data.goodkey]]`
-
-At this time the Snippet cannot fetch Resources with no page views, because hits are stored in a custom table and that's all the Snippet interacts with.
 
 #### Possible Return Values
 
@@ -59,8 +55,21 @@ mpResources can execute in 4 "modes" depending on the properties passed to it:
 &sortby=`FIELD(modResource.id, [[mpResources]])`
 ```
 - A single number, which is the number of page views for a given Resource
-- If a Chunk name is provided to the 'tpl' property, a formatted list of page views for a given Resource 
+- If a Chunk name is provided to the 'tpl' property, a formatted list of page views for a given Resource
 - If a Chunk name is provided to the 'tpl' property, a formatted list of most (or least) popular Resources  
+
+At this time the Snippet cannot fetch Resources with no page views, because hits are stored in a custom table and that's all the Snippet interacts with.
+
+#### Available Placeholders
+**Without specifying a Resource ID**
+'resource' | ID of viewed Resource
+'views' | total number of views tracked
+
+**With a Resource ID specified**
+'id' | ID of the page view record.
+'resource' | ID of viewed Resource
+'datetime' | (only with 'resource' property) datetime at which this particular view was tracked
+'data' | (only with 'resource' property) use dot notation for placeholder keys, to access logged data properties. For example: `[[+data.goodkey]]`
 
 ## Example Usage
 
