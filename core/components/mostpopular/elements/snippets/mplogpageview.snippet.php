@@ -40,10 +40,9 @@ $respond = $modx->getOption('respond', $scriptProperties, true);
  * multiple requests within sessionTimeout period
  */
 if ($resource < 1) return;
-if (!empty($sessionVar)) {
-    if (isset($_SESSION[$sessionVar][$resource])) return;
-    if ($_SESSION[$sessionVar]['last_view'] + abs($sessionTimeout) > time()) return;
-}
+if (!empty($sessionVar) && isset($_SESSION[$sessionVar][$resource])) return;
+if (($sessionTimeout > 0) && ($_SESSION['mp_last_view'] + abs($sessionTimeout) > time())) return;
+
 
 /* setting allowedDataKeys is required, if usePostVars is true */
 $allowedDataKeys = $modx->getOption('allowedDataKeys', $scriptProperties, $modx->getOption('mostpopular.allowed_data_keys'));
@@ -98,13 +97,11 @@ $response = [];
 // LOG PAGE VIEW
 if ($pageview->save()) { // pageview was logged
     $response['success'] = true;
-    if (!empty($sessionVar)) {
-        $_SESSION[$sessionVar][$resource] = true;
-        $_SESSION[$sessionVar]['last_view'] = time();
-    }
+    if ($sessionTimeout > 0) $_SESSION['mp_last_view'] = time();
+    if (!empty($sessionVar)) $_SESSION[$sessionVar][$resource] = true;
 } else {
     $response['message'] = 'Unknown error. The pageview could not be saved.';
 }
 
-// RETURN 
+// RETURN
 return ($respond) ? $modx->toJSON($response) : '';
