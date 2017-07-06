@@ -62,7 +62,7 @@ $resource = abs($resource);
 $mode = (empty($tpl)) ? '0' : '1';
 $mode .= ($resource > 0) ? '1' : '0';
 
-// OUTPUT 
+// OUTPUT
 switch ($mode) {
     case '11':
         // Fetch all page views for a specific Resource sorted by datetime
@@ -83,6 +83,7 @@ switch ($mode) {
             }
             $output = implode($separator, $output);
         }
+        break;
     case '10':
         // Fetch a set of resource IDs ordered by number of page views
         $stmt = $modx->query("
@@ -102,9 +103,20 @@ switch ($mode) {
             }
             $output = implode($separator, $output);
         }
+        break;
     case '01':
+        $stmt = $modx->query("
+            SELECT COUNT(*) AS views
+            FROM modx_mp_pageviews
+            WHERE datetime >= '" . $fromDate . "' AND datetime < '" . $toDate . "' AND resource = " . $resource . "
+            GROUP BY resource
+        ");
         // No tpl and specified Resource means we just return the number of page views for the Resource
-        $output = $modx->getCount('MPPageViews', array('resource' => $resource));
+        if ($stmt) {
+            $rows = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+            $output = implode($separator, $rows);
+        }
+        break;
     case '00':
     default:
         // Fetch a set of resource IDs ordered by number of page views
@@ -121,6 +133,7 @@ switch ($mode) {
             $rows = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
             $output = implode($separator, $rows);
         }
+        break;
 }
 
 // RETURN
