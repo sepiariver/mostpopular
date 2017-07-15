@@ -30,6 +30,8 @@ Properties:
 - 'respond' | (bool) | true | response is returned (as JSON), otherwise empty string
 - 'allowedDataKeys' | (string) | empty string | comma-separated list of allowed keys in the array of data to log. This is required to  log any custom data, if 'usePostVars' is true.
 - 'logData' | (string) | empty string | JSON-formatted string, passed to the Snippet call, to log with the page hit. Gets processed with `$modx->fromJSON`, failing which nothing will be logged. Nested objects will be removed to limit logged data to 'allowedDataKeys' only.
+- 'skipCrawlers' | (bool) | true | flag to enable/disable checking for crawlers before logging page view
+- 'skipUAs' | (string) | 'GoogleBot, Bingbot, Slurp, Yahoo, DuckDuckBot, Baiduspider, YandexBot, Sogou, Exabot, Konqueror, facebot, facebookexternalhit, ia_archiver, wget' https://www.keycdn.com/blog/web-crawlers/ | comma-separated list of user agent strings to detect 
 
 mpLogPageView returns early if an invalid resource ID is provided or a session variable exists for the resource ID or multiple requests in the same session occur within the sessionTimeout period
 

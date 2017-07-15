@@ -1,3 +1,7 @@
+MostPopular 0.0.3-beta1
+=======================
+Attempt to skip crawlers.
+
 MostPopular 0.0.1-beta1
 =======================
 Private beta testing.

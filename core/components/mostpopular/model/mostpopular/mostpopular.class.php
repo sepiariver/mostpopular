@@ -87,13 +87,13 @@ class MostPopular
         return $option;
     }
 
-    public function explodeAndClean($array, $delimiter = ',')
+    public function explodeAndClean($array, $delimiter = ',', $callback = '')
     {
         $array = explode($delimiter, $array);     // Explode fields to array
         $array = array_map('trim', $array);       // Trim array's values
         $array = array_keys(array_flip($array));  // Remove duplicate fields
         $array = array_filter($array);            // Remove empty values from array
-
+        if (!empty($callback) && function_exists($callback)) $array = array_map($callback, $array);
         return $array;
     }
     public function getChunk($tpl, $phs)

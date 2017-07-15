@@ -23,6 +23,17 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA
  **/
 
+ // PATHS
+ $mpPath = $modx->getOption('mostpopular.core_path', null, $modx->getOption('core_path') . 'components/mostpopular/');
+ $mpPath .= 'model/mostpopular/';
+
+ // GET SERVICE
+ if (file_exists($mpPath . 'mostpopular.class.php')) $mostpopular = $modx->getService('mostpopular', 'MostPopular', $mpPath, $scriptProperties);
+ if (!($mostpopular instanceof MostPopular)) {
+     $modx->log(modX::LOG_LEVEL_ERROR, '[mpLogPageView] could not load the required MostPopular class!');
+     return;
+ }
+
 // OPTIONS
 /* set to true for ajax pageview logging*/
 $usePostVars = $modx->getOption('usePostVars', $scriptProperties, true);
@@ -34,6 +45,18 @@ $sessionTimeout = $modx->getOption('sessionTimeout', $scriptProperties, $modx->g
 $resource = ($usePostVars) ? (int) $modx->getOption('resource', $_POST, 0, true) : (int) $modx->getOption('resource', $scriptProperties, $modx->resource->get('id'), true);
 /* response is returned (as JSON), otherwise '' */
 $respond = $modx->getOption('respond', $scriptProperties, true);
+/* Attempt to skip crawlers? */
+$skipCrawlers = $modx->getOption('skipCrawlers', $scriptProperties, true);
+if ($skipCrawlers) {
+    /* comma-separated list of user agents to skip */
+    $skipUAs = $modx->getOption('skipUAs', $scriptProperties, 'GoogleBot, Bingbot, Slurp, Yahoo, DuckDuckBot, Baiduspider, YandexBot, Sogou, Exabot, Konqueror, facebot, facebookexternalhit, ia_archiver, wget');
+    $skipUAs = $mostpopular->explodeAndClean($skipUAs, ',', 'strtolower');
+    /* return early if user agent string matches a defined $crawler */
+    $ua = strtolower($_SERVER['HTTP_USER_AGENT']);
+    foreach ($skipUAs as $crawler) {
+        if (strpos($ua, $crawler) !== false) return;
+    }
+}
 
 /* return early if invalid resource ID or
  * session variable exists for resource ID or
@@ -43,23 +66,11 @@ if ($resource < 1) return;
 if (!empty($sessionVar) && isset($_SESSION[$sessionVar][$resource])) return;
 if (($sessionTimeout > 0) && ($_SESSION['mp_last_view'] + abs($sessionTimeout) > time())) return;
 
-
 /* setting allowedDataKeys is required, if usePostVars is true */
 $allowedDataKeys = $modx->getOption('allowedDataKeys', $scriptProperties, $modx->getOption('mostpopular.allowed_data_keys'));
 /* ability to pass logData as a property of the Snippet call */
 $logData = $modx->fromJSON($modx->getOption('logData', $scriptProperties, ''));
 if (!is_array($logData)) $logData = array();
-
-// PATHS
-$mpPath = $modx->getOption('mostpopular.core_path', null, $modx->getOption('core_path') . 'components/mostpopular/');
-$mpPath .= 'model/mostpopular/';
-
-// GET SERVICE
-if (file_exists($mpPath . 'mostpopular.class.php')) $mostpopular = $modx->getService('mostpopular', 'MostPopular', $mpPath, $scriptProperties);
-if (!($mostpopular instanceof MostPopular)) {
-    $modx->log(modX::LOG_LEVEL_ERROR, '[mpLogPageView] could not load the required MostPopular class!');
-    return;
-}
 
 // PAGE VIEW OBJECT
 $pageview = $modx->newObject('MPPageViews');
