@@ -23,20 +23,25 @@
  * Place, Suite 330, Boston, MA 02111-1307 USA
  **/
 
- // PATHS
- $mpPath = $modx->getOption('mostpopular.core_path', null, $modx->getOption('core_path') . 'components/mostpopular/');
- $mpPath .= 'model/mostpopular/';
+// PATHS
+$mpPath = $modx->getOption('mostpopular.core_path', null, $modx->getOption('core_path') . 'components/mostpopular/');
+$mpPath .= 'model/mostpopular/';
 
- // GET SERVICE
- if (file_exists($mpPath . 'mostpopular.class.php')) $mostpopular = $modx->getService('mostpopular', 'MostPopular', $mpPath, $scriptProperties);
- if (!($mostpopular instanceof MostPopular)) {
-     $modx->log(modX::LOG_LEVEL_ERROR, '[mpLogPageView] could not load the required MostPopular class!');
-     return;
- }
+// GET SERVICE
+if (file_exists($mpPath . 'mostpopular.class.php')) $mostpopular = $modx->getService('mostpopular', 'MostPopular', $mpPath, $scriptProperties);
+if (!($mostpopular instanceof MostPopular) || !$modx->resource) {
+    $modx->log(modX::LOG_LEVEL_ERROR, '[mpLogPageView] could not load the required MostPopular class!');
+    return;
+}
+
+// DEFAULTS
+$jsonResource = ($modx->resource->get('contentType') === 'application/json');
+$usePostVars = ($jsonResource) ? true : false;
+$respond = ($jsonResource) ? true : false;
 
 // OPTIONS
 /* set to true for ajax pageview logging*/
-$usePostVars = $modx->getOption('usePostVars', $scriptProperties, true);
+$usePostVars = $modx->getOption('usePostVars', $scriptProperties, $usePostVars);
 /* if empty, no rate-limiting or session persistence happens. Make empty with caution! */
 $sessionVar = $modx->getOption('sessionVar', $scriptProperties, $modx->getOption('mostpopular.session_var_key'));
 /* in an effort to catch programmatic requests. 5 seconds seems reasonable. */
@@ -44,7 +49,7 @@ $sessionTimeout = $modx->getOption('sessionTimeout', $scriptProperties, $modx->g
 /* POSTed resource falls back to Snippet property falls back to current Resource */
 $resource = ($usePostVars) ? (int) $modx->getOption('resource', $_POST, 0, true) : (int) $modx->getOption('resource', $scriptProperties, $modx->resource->get('id'), true);
 /* response is returned (as JSON), otherwise '' */
-$respond = $modx->getOption('respond', $scriptProperties, true);
+$respond = $modx->getOption('respond', $scriptProperties, $respond);
 /* Attempt to skip crawlers? */
 $skipCrawlers = $modx->getOption('skipCrawlers', $scriptProperties, true);
 if ($skipCrawlers) {
