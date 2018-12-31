@@ -23,11 +23,11 @@ Install via MODX Extras Installer
 
 Properties:
 
-- 'usePostVars' | (bool) | true | set to true for ajax pageview logging
+- 'usePostVars' | (bool) | depends on Resource content type | set to true for ajax pageview logging
 - 'sessionVar' | (string) | system setting | if empty, no rate-limiting or session persistence happens. Make empty with caution!
 - 'sessionTimeout' | (int) | 5 | in an effort to catch programmatic requests. 5 seconds seems reasonable. 0 disables but use with caution!
 - 'resource' (required) | (int) | current Resource | gets Resource ID form POSTed resource, falling back to Snippet property, falling back to current Resource
-- 'respond' | (bool) | true | response is returned (as JSON), otherwise empty string
+- 'respond' | (bool) | depends on Resource content type | response is returned (as JSON), otherwise empty string
 - 'allowedDataKeys' | (string) | empty string | comma-separated list of allowed keys in the array of data to log. This is required to  log any custom data, if 'usePostVars' is true.
 - 'logData' | (string) | empty string | JSON-formatted string, passed to the Snippet call, to log with the page hit. Gets processed with `$modx->fromJSON`, failing which nothing will be logged. Nested objects will be removed to limit logged data to 'allowedDataKeys' only.
 - 'skipCrawlers' | (bool) | true | flag to enable/disable checking for crawlers before logging page view
@@ -47,6 +47,7 @@ Properties:
 - 'sortDir' | (string) | 'DESC' | order by most page views or least page views
 - 'fromDate' | (string) | empty string | use English textual description of the start date, after which page views will be returned. See http://php.net/manual/en/function.strtotime.php for examples.
 - 'toDate' | (string) | 'now' | use English textual description of the end date, before which page views will be returned. See http://php.net/manual/en/function.strtotime.php for examples.
+- 'exclude' | (string) | empty string | comma-separated list of Resource IDs to explicitly exclude. Only used for mode 00
 
 #### Possible Return Values
 
