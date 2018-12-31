@@ -2,7 +2,7 @@
 /**
  * mpResources
  *
- * Adds a record to the MPPageViews table.
+ * Fetches most popular resource IDs.
  *
  * @package MostPopular
  * @author @sepiariver <info@sepiariver.com>
@@ -85,7 +85,7 @@ switch ($mode) {
         }
         break;
     case '10':
-        // Fetch a set of resource IDs ordered by number of page views
+        // Fetch a set of resource objects ordered by number of page views
         $stmt = $modx->query("
             SELECT resource, COUNT(*) AS views
             FROM modx_mp_pageviews
