@@ -37,6 +37,8 @@ $sortDir = (strtoupper($modx->getOption('sortDir', $scriptProperties, 'DESC')) =
 /* these get processed later, before the query */
 $fromDate = strtotime($modx->getOption('fromDate', $scriptProperties, ''));
 $toDate = strtotime($modx->getOption('toDate', $scriptProperties, 'now'));
+/* exclude resource IDs for mode 00 and cast */
+$exclude = array_filter(array_map('intval', array_map('trim', explode(',', $modx->getOption('exclude', $scriptProperties, '')))));
 
 // PATHS
 $mpPath = $modx->getOption('mostpopular.core_path', null, $modx->getOption('core_path') . 'components/mostpopular/');
@@ -124,6 +126,7 @@ switch ($mode) {
             SELECT resource, COUNT(*) AS views
             FROM modx_mp_pageviews
             WHERE datetime >= '" . $fromDate . "' AND datetime < '" . $toDate . "'
+            AND resource NOT IN (" . implode(',', $exclude) . ")
             GROUP BY resource
             ORDER BY views " . $sortDir . "
             LIMIT " . $limit . "
