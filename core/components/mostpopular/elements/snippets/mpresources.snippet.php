@@ -59,6 +59,9 @@ if ($toDate === false) $toDate = time();
 $fromDate = strftime("%F %T", $fromDate);
 $toDate = strftime("%F %T", $toDate);
 
+// EXCLUDE
+$excludeSQL = (empty($exclude)) ? '' : "AND resource NOT IN (" . implode(',', $exclude) . ")";
+
 // MODE
 $resource = abs($resource);
 $mode = (empty($tpl)) ? '0' : '1';
@@ -126,7 +129,7 @@ switch ($mode) {
             SELECT resource, COUNT(*) AS views
             FROM modx_mp_pageviews
             WHERE datetime >= '" . $fromDate . "' AND datetime < '" . $toDate . "'
-            AND resource NOT IN (" . implode(',', $exclude) . ")
+            " . $excludeSQL . "
             GROUP BY resource
             ORDER BY views " . $sortDir . "
             LIMIT " . $limit . "
