@@ -32,12 +32,21 @@
             precision="16378"
             phptype="json"
             default="[]" />
+        <field
+            key="ip"
+            dbtype="varchar"
+            precision="2000"
+            phptype="string"
+            default="" />
 
         <index alias="resource" name="resource" primary="false" unique="false" type="BTREE">
             <column key="resource" length="" collation="A" null="false" />
         </index>
         <index alias="datetime" name="datetime" primary="false" unique="false" type="BTREE">
             <column key="datetime" length="" collation="A" null="false" />
+        </index>
+        <index alias="ip" name="ip" primary="false" unique="false" type="BTREE">
+            <column key="ip" length="" collation="A" null="false" />
         </index>
     </object>
 </model>
