@@ -91,7 +91,7 @@ $pv = array(
 if (!empty($allowedDataKeys)) {
     // Only pass through allowedDataKeys
     $allowedDataKeys = array_flip($mostpopular->explodeAndClean($allowedDataKeys));
-    $data = ($usePostVars) ? $_POST : $logData;
+    $data = ($usePostVars) ? modX::sanitize($_POST, $modx->sanitizePatterns) : $logData;
     $pv['data'] = array_intersect_key($data, $allowedDataKeys);
 } else {
     // Only skip allowedDataKeys if using internal data source
