@@ -1,3 +1,7 @@
+MostPopular 1.0.0-rc1
+=====================
+Explicitly exclude Resources by ID.
+
 MostPopular 0.0.3-beta1
 =======================
 Attempt to skip crawlers.

@@ -31,7 +31,7 @@ Properties:
 - 'allowedDataKeys' | (string) | empty string | comma-separated list of allowed keys in the array of data to log. This is required to  log any custom data, if 'usePostVars' is true.
 - 'logData' | (string) | empty string | JSON-formatted string, passed to the Snippet call, to log with the page hit. Gets processed with `$modx->fromJSON`, failing which nothing will be logged. Nested objects will be removed to limit logged data to 'allowedDataKeys' only.
 - 'skipCrawlers' | (bool) | true | flag to enable/disable checking for crawlers before logging page view
-- 'skipUAs' | (string) | 'GoogleBot, Bingbot, Slurp, Yahoo, DuckDuckBot, Baiduspider, YandexBot, Sogou, Exabot, Konqueror, facebot, facebookexternalhit, ia_archiver, wget' https://www.keycdn.com/blog/web-crawlers/ | comma-separated list of user agent strings to detect 
+- 'skipUAs' | (string) | 'GoogleBot, Bingbot, Slurp, Yahoo, DuckDuckBot, Baiduspider, YandexBot, Sogou, Exabot, Konqueror, facebot, facebookexternalhit, ia_archiver, wget' https://www.keycdn.com/blog/web-crawlers/ | comma-separated list of user agent strings to detect
 
 mpLogPageView returns early if an invalid resource ID is provided or a session variable exists for the resource ID or multiple requests in the same session occur within the sessionTimeout period
 
@@ -54,9 +54,12 @@ Properties:
 mpResources can execute in 4 "modes" depending on the properties passed to it:
 
 - A comma-separated list of the IDs of the most (or least) popular Resources. This can be passed to the 'resources' property of another Snippet, like getResources. To sort your getResources result set the same way as the mpResources Snippet, you'll want to do this:
+
 ```
-&sortby=`FIELD(modResource.id, [[mpResources]])`
+&sortby=`FIELD(modResource.id,[[mpResources]])`
+&sortdir=`ASC`
 ```
+
 - A single number, which is the number of page views for a given Resource
 - If a Chunk name is provided to the 'tpl' property, a formatted list of page views for a given Resource
 - If a Chunk name is provided to the 'tpl' property, a formatted list of most (or least) popular Resources  
@@ -64,6 +67,7 @@ mpResources can execute in 4 "modes" depending on the properties passed to it:
 At this time the Snippet cannot fetch Resources with no page views, because hits are stored in a custom table and that's all the Snippet interacts with.
 
 #### Available Placeholders
+
 **Without specifying a Resource ID**
 - 'resource' | ID of viewed Resource
 - 'views' | total number of views tracked

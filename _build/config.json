@@ -3,7 +3,7 @@
     "lowCaseName": "mostpopular",
     "description": "Track page hits and most popular Resources in MODX.",
     "author": "YJ Tso",
-    "version": "1.0.0-beta",
+    "version": "1.0.0-rc1",
     "package": {
         "elements": {
             "snippets": [{
