@@ -65,11 +65,15 @@ if ($skipCrawlers) {
 
 /* return early if invalid resource ID or
  * session variable exists for resource ID or
- * multiple requests within sessionTimeout period
+ * multiple requests within sessionTimeout period or
+ * IP throttle is triggered
  */
 if ($resource < 1) return;
 if (!empty($sessionVar) && isset($_SESSION[$sessionVar][$resource])) return;
 if (($sessionTimeout > 0) && ($_SESSION['mp_last_view'] + abs($sessionTimeout) > time())) return;
+$ip = $modx->getOption('HTTP_X_FORWARDED_FOR', $_SERVER, $modx->getOption('REMOTE_ADDR', $_SERVER, ''), true);
+$ipq = $modx->newQuery('MPPageViews');
+
 
 /* setting allowedDataKeys is required, if usePostVars is true */
 $allowedDataKeys = $modx->getOption('allowedDataKeys', $scriptProperties, $modx->getOption('mostpopular.allowed_data_keys'));

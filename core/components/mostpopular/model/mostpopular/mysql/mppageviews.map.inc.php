@@ -7,11 +7,16 @@ $xpdo_meta_map['MPPageViews']= array (
   'version' => '1.1',
   'table' => 'mp_pageviews',
   'extends' => 'xPDOSimpleObject',
+  'tableMeta' => 
+  array (
+    'engine' => 'MyISAM',
+  ),
   'fields' => 
   array (
     'resource' => NULL,
     'datetime' => 'CURRENT_TIMESTAMP',
     'data' => '[]',
+    'ip' => '',
   ),
   'fieldMeta' => 
   array (
@@ -39,6 +44,13 @@ $xpdo_meta_map['MPPageViews']= array (
       'precision' => '16378',
       'phptype' => 'json',
       'default' => '[]',
+    ),
+    'ip' => 
+    array (
+      'dbtype' => 'varchar',
+      'precision' => '2000',
+      'phptype' => 'string',
+      'default' => '',
     ),
   ),
   'indexes' => 
@@ -68,6 +80,22 @@ $xpdo_meta_map['MPPageViews']= array (
       'columns' => 
       array (
         'datetime' => 
+        array (
+          'length' => '',
+          'collation' => 'A',
+          'null' => false,
+        ),
+      ),
+    ),
+    'ip' => 
+    array (
+      'alias' => 'ip',
+      'primary' => false,
+      'unique' => false,
+      'type' => 'BTREE',
+      'columns' => 
+      array (
+        'ip' => 
         array (
           'length' => '',
           'collation' => 'A',
