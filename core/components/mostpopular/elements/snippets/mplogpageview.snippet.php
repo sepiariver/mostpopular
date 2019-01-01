@@ -62,6 +62,8 @@ if ($skipCrawlers) {
         if (strpos($ua, $crawler) !== false) return;
     }
 }
+/* Attempt throttling logging of requests from same IP */
+$ipThrottle = $modx->getOption('ipThrottle', $scriptProperties, 30, true);
 
 /* return early if invalid resource ID or
  * session variable exists for resource ID or
@@ -71,9 +73,16 @@ if ($skipCrawlers) {
 if ($resource < 1) return;
 if (!empty($sessionVar) && isset($_SESSION[$sessionVar][$resource])) return;
 if (($sessionTimeout > 0) && ($_SESSION['mp_last_view'] + abs($sessionTimeout) > time())) return;
-$ip = $modx->getOption('HTTP_X_FORWARDED_FOR', $_SERVER, $modx->getOption('REMOTE_ADDR', $_SERVER, ''), true);
-$ipq = $modx->newQuery('MPPageViews');
-
+if ($ipThrottle > 0) {
+    $ip = $modx->getOption('HTTP_X_FORWARDED_FOR', $_SERVER, $modx->getOption('REMOTE_ADDR', $_SERVER, ''), true);
+    $window = time() - 60; // hard-code 1-minute
+    $ipq = $modx->newQuery('MPPageViews');
+    $ipq->where([
+        'ip:=' => $ip,
+        'datetime:>' => $window
+    ]);
+    if ($modx->getCount('MPPageViews', $ipq) > $ipThrottle) return;
+}
 
 /* setting allowedDataKeys is required, if usePostVars is true */
 $allowedDataKeys = $modx->getOption('allowedDataKeys', $scriptProperties, $modx->getOption('mostpopular.allowed_data_keys'));
