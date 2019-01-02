@@ -3,7 +3,7 @@
     package="mostpopular"
     baseClass="xPDOObject"
     platform="mysql"
-    defaultEngine="MyISAM"
+    defaultEngine="InnoDB"
     phpdoc-package="mostpopular"
     version="1.1">
     <object
@@ -35,7 +35,7 @@
         <field
             key="ip"
             dbtype="varchar"
-            precision="2000"
+            precision="255"
             phptype="string"
             default="" />
 

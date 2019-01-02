@@ -9,7 +9,7 @@ $xpdo_meta_map['MPPageViews']= array (
   'extends' => 'xPDOSimpleObject',
   'tableMeta' => 
   array (
-    'engine' => 'MyISAM',
+    'engine' => 'InnoDB',
   ),
   'fields' => 
   array (
@@ -48,7 +48,7 @@ $xpdo_meta_map['MPPageViews']= array (
     'ip' => 
     array (
       'dbtype' => 'varchar',
-      'precision' => '2000',
+      'precision' => '255',
       'phptype' => 'string',
       'default' => '',
     ),

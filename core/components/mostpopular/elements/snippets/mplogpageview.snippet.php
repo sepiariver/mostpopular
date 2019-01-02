@@ -73,8 +73,8 @@ $ipThrottle = $modx->getOption('ipThrottle', $scriptProperties, 30, true);
 if ($resource < 1) return;
 if (!empty($sessionVar) && isset($_SESSION[$sessionVar][$resource])) return;
 if (($sessionTimeout > 0) && ($_SESSION['mp_last_view'] + abs($sessionTimeout) > time())) return;
+$ip = $modx->getOption('HTTP_X_FORWARDED_FOR', $_SERVER, $modx->getOption('REMOTE_ADDR', $_SERVER, ''), true);
 if ($ipThrottle > 0) {
-    $ip = $modx->getOption('HTTP_X_FORWARDED_FOR', $_SERVER, $modx->getOption('REMOTE_ADDR', $_SERVER, ''), true);
     $window = time() - 60; // hard-code 1-minute
     $ipq = $modx->newQuery('MPPageViews');
     $ipq->where([
@@ -100,6 +100,7 @@ if (!$pageview) {
 // FORMAT DATA
 $pv = array(
     'resource' => $resource,
+    'ip' => $ip,
 );
 if (!empty($allowedDataKeys)) {
     // Only pass through allowedDataKeys
