@@ -2,7 +2,7 @@
 /**
  * mpResources
  *
- * Fetches most popular Resources.
+ * Fetches most popular resource IDs.
  *
  * @package MostPopular
  * @author @sepiariver <info@sepiariver.com>
@@ -59,6 +59,7 @@ if ($toDate === false) $toDate = time();
 $fromDate = strftime("%F %T", $fromDate);
 $toDate = strftime("%F %T", $toDate);
 
+
 // MODE
 $resource = abs($resource);
 $mode = (empty($tpl)) ? '0' : '1';
@@ -78,7 +79,7 @@ switch ($mode) {
         $c->limit($limit);
         
         // Execute
-        $rows = $modx->getIterator('MPPageViews', $c);
+        $rows = $modx->getCollection('MPPageViews', $c);
         
         // Template each page view with a Chunk
         $output = [];
@@ -101,17 +102,20 @@ switch ($mode) {
         $c->prepare();
         $stmt = $modx->query($c->toSQL());
         
-        // Template each Resource with a Chunk
-        // Better to use default mode and pass IDs to getResources
-        // @TODO: define relationship in schema to join page view count
+        // Template each Resource with a Chunk, add views attribute
+        // Better to use default mode and getResources of views not needed
         if ($stmt) {
             $output = [];
-            $ids = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+            $pvs = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+            $ids = array_keys($pvs);
             $rq = $modx->newQuery('modResource');
             $rq->where(['id:IN'  => $ids]);
-            $rows = $modx->getIterator('modResource', $rq);
+            $rq->sortby('FIELD(modResource.id, ' . implode(',', $ids) . ' )');
+            $rows = $modx->getCollection('modResource', $rq);
             foreach ($rows as $row) {
-                $output[] = $modx->getChunk($tpl, $row->toArray());
+                $row = $row->toArray();
+                $row['views'] = $pvs[$row['id']];
+                $output[] = $mostpopular->getChunk($tpl, $row);
             }
             $output = implode($separator, $output);
         }
