@@ -57,16 +57,18 @@ Properties:
 
 mpResources can execute in 4 "modes" depending on the properties passed to it:
 
-- A comma-separated list of the IDs of the most (or least) popular Resources. This can be passed to the 'resources' property of another Snippet, like getResources. To sort your getResources result set the same way as the mpResources Snippet, you'll want to do this:
+1. DEFAULT: no 'resource' property, nor 'tpl'. Returns a comma-separated list of the IDs of the most (or least) popular Resources. This can be passed to the 'resources' property of another Snippet, like getResources. To sort your getResources result set the same way as the mpResources Snippet, you'll want to do this:
 
 ```
 &sortby=`FIELD(modResource.id,[[mpResources]])`
 &sortdir=`ASC`
 ```
 
-- A single number, which is the number of page views for a given Resource
-- If a Chunk name is provided to the 'tpl' property, a formatted list of page views for a given Resource
-- If a Chunk name is provided to the 'tpl' property, a formatted list of most (or least) popular Resources  
+2. SINGLE: 'resource' set, no 'tpl'. Returns a single number, which is the number of page views for a given Resource
+
+3. VIEWS: 'resource' set, with a Chunk name in the 'tpl' property. Returns a formatted list of page views for the given Resource.
+
+4. RESOURCES: no 'resource', with a Chunk name in the 'tpl' property. Returns a formatted list of most (or least) popular Resources, with page view count.  
 
 At this time the Snippet cannot fetch Resources with no page views, because hits are stored in a custom table and that's all the Snippet interacts with.
 
