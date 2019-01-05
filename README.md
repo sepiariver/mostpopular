@@ -74,8 +74,10 @@ At this time the Snippet cannot fetch Resources with no page views, because hits
 
 #### Available Placeholders
 
+If a Chunk name is provided in the 'tpl' property, the following placeholders are set.
+
 **Without specifying a Resource ID**
-- 'resource' | ID of viewed Resource
+- All standard Resource fields
 - 'views' | total number of views tracked
 
 **With a Resource ID specified**
@@ -83,6 +85,7 @@ At this time the Snippet cannot fetch Resources with no page views, because hits
 - 'resource' | ID of viewed Resource
 - 'datetime' | datetime at which this particular view was tracked
 - 'data' | use dot notation for placeholder keys, to access logged data properties. For example: `[[+data.goodkey]]`
+- 'ip' is unset 
 
 ## Example Usage
 
@@ -112,4 +115,4 @@ The above would be called on the Resource you want to track, because it won't us
 
 ```
 
-The above fetches the _least_ popular Resources that have been tracked (at least 1 page view) and formats the page view data with a Chunk called "mpResourcesTpl".
+The above fetches the _least_ popular Resources that have been tracked (at least 1 page view) from 1 week ago to 5 hours ago, and formats the Resource and page view data with a Chunk called "mpResourcesTpl".
