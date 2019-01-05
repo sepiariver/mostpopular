@@ -34,8 +34,8 @@
             default="[]" />
         <field
             key="ip"
-            dbtype="varchar"
-            precision="255"
+            dbtype="char"
+            precision="32"
             phptype="string"
             default="" />
 
