@@ -36,8 +36,8 @@ if (!($mostpopular instanceof MostPopular) || !$modx->resource) {
 
 // DEFAULTS
 $jsonResource = ($modx->resource->get('contentType') === 'application/json');
-$usePostVars = ($jsonResource) ? true : false;
-$respond = ($jsonResource) ? true : false;
+$usePostVars = ($jsonResource);
+$respond = ($jsonResource);
 
 // OPTIONS
 /* set to true for ajax pageview logging*/
@@ -74,6 +74,7 @@ if ($resource < 1) return;
 if (!empty($sessionVar) && isset($_SESSION[$sessionVar][$resource])) return;
 if (($sessionTimeout > 0) && ($_SESSION['mp_last_view'] + abs($sessionTimeout) > time())) return;
 $ip = $modx->getOption('HTTP_X_FORWARDED_FOR', $_SERVER, $modx->getOption('REMOTE_ADDR', $_SERVER, ''), true);
+$ip = md5($ip);
 if ($ipThrottle > 0) {
     $window = time() - 60; // hard-code 1-minute
     $ipq = $modx->newQuery('MPPageViews');

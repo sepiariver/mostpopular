@@ -85,6 +85,7 @@ switch ($mode) {
         $output = [];
         foreach ($rows as $row) {
             $row = $row->toArray();
+            unset($row['ip']);
             $row['data'] = $modx->fromJSON($row['data']);
             $output[] = $mostpopular->getChunk($tpl, $row);
         }
@@ -139,7 +140,7 @@ switch ($mode) {
         $c->prepare();
         $stmt = $modx->query($c->toSQL());
         
-        // If no tpl was specified, we return a comma-separated list
+        // Since no tpl was specified, we return a comma-separated list
         if ($stmt) {
             $rows = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
             $output = implode($separator, $rows);
@@ -148,6 +149,5 @@ switch ($mode) {
 }
 
 // RETURN
-
 if (empty($toPlaceholder)) return $output;
 $modx->setPlaceholder($toPlaceholder, $output);
