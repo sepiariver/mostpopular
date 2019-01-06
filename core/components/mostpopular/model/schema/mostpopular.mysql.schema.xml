@@ -23,7 +23,6 @@
             dbtype="timestamp"
             phptype="timestamp"
             default="CURRENT_TIMESTAMP"
-            attributes="ON UPDATE CURRENT_TIMESTAMP"
             null="false"
             index="index" />
         <field
@@ -37,6 +36,7 @@
             dbtype="char"
             precision="32"
             phptype="string"
+            null="false"
             default="" />
 
         <index alias="resource" name="resource" primary="false" unique="false" type="BTREE">
