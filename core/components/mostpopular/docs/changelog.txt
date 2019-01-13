@@ -1,8 +1,9 @@
-MostPopular 1.0.0-rc2
+MostPopular 1.0.1-beta1
 =====================
 Explicitly exclude Resources by ID.
 Defaults set dynamically based on contentType.
 Throttle by IP address.
+Optimize datetime conditional.
 
 MostPopular 0.0.3-beta1
 =======================

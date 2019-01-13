@@ -36,7 +36,7 @@ $limit = (int) $modx->getOption('limit', $scriptProperties, 20);
 $sortDir = (strtoupper($modx->getOption('sortDir', $scriptProperties, 'DESC')) === 'ASC') ? 'ASC' : 'DESC';
 /* these get processed later, before the query */
 $fromDate = strtotime($modx->getOption('fromDate', $scriptProperties, ''));
-$toDate = strtotime($modx->getOption('toDate', $scriptProperties, 'now'));
+$toDate = strtotime($modx->getOption('toDate', $scriptProperties, ''));
 /* exclude resource IDs for mode 00 and cast */
 $exclude = array_filter(array_map('intval', array_map('trim', explode(',', $modx->getOption('exclude', $scriptProperties, '')))));
 
@@ -51,15 +51,6 @@ if (!($mostpopular instanceof MostPopular)) {
     return;
 }
 
-// DATETIME
-/* normalize bad inputs */
-if ($fromDate === false) $fromDate = strtotime('1970-01-01');
-if ($toDate === false) $toDate = time();
-/* convert to string for mysql */
-$fromDate = strftime("%F %T", $fromDate);
-$toDate = strftime("%F %T", $toDate);
-
-
 // MODE
 $resource = abs($resource);
 $mode = (empty($tpl)) ? '0' : '1';
@@ -67,20 +58,30 @@ $mode .= ($resource > 0) ? '1' : '0';
 
 // QUERY
 $c = $modx->newQuery('MPPageViews');
-$c->where([
-    'datetime:>=' => $fromDate,
-    'datetime:<' => $toDate,
-]);
+
+// DATETIME
+if (!empty($fromDate)) {
+    /* convert to string for mysql */
+    $fromDate = strftime("%F %T", $fromDate);
+    $c->where(['datetime:>=' => $fromDate]);
+}
+if (!empty($toDate)) {
+    /* convert to string for mysql */
+    $toDate = strftime("%F %T", $toDate);
+    $c->where(['datetime:<' => $toDate]);
+}
+
+// MODE
 switch ($mode) {
     case '11':
         // Fetch all page views for a specific Resource sorted by datetime
         $c->where(['resource:=' => $resource]);
         $c->sortby('datetime', $sortDir);
         $c->limit($limit);
-        
+
         // Execute
         $rows = $modx->getCollection('MPPageViews', $c);
-        
+
         // Template each page view with a Chunk
         $output = [];
         foreach ($rows as $row) {
@@ -98,11 +99,11 @@ switch ($mode) {
         $c->groupby('resource');
         $c->sortby('views', $sortDir);
         $c->limit($limit);
-        
+
         // Execute
         $c->prepare();
         $stmt = $modx->query($c->toSQL());
-        
+
         // Template each Resource with a Chunk, add views attribute
         // Better to use default mode and getResources of views not needed
         if ($stmt) {
@@ -125,7 +126,7 @@ switch ($mode) {
         // Fetch page view count for single Resource
         $c->select('COUNT(*) AS views');
         $c->where(['resource:=' => $resource]);
-        
+
         $output = $modx->getValue($c->prepare());
         break;
     case '00':
@@ -136,10 +137,10 @@ switch ($mode) {
         $c->groupby('resource');
         $c->sortby('views', $sortDir);
         $c->limit($limit);
-        
+
         $c->prepare();
         $stmt = $modx->query($c->toSQL());
-        
+
         // Since no tpl was specified, we return a comma-separated list
         if ($stmt) {
             $rows = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);

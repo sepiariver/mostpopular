@@ -29,8 +29,8 @@ Properties:
 - 'sessionTimeout' | (int) | 5 | in an effort to catch programmatic requests. 5 seconds seems reasonable. 0 disables but use with caution!
 - 'resource' (required) | (int) | current Resource | gets Resource ID form POSTed resource, falling back to Snippet property, falling back to current Resource
 - 'respond' | (bool) | default depends on Resource content type | response is returned (as JSON), otherwise empty string
-- 'allowedDataKeys' | (string) | empty string | comma-separated list of allowed keys in the array of data to log. This is required to  log any custom data, if 'usePostVars' is true.
-- 'logData' | (string) | empty string | JSON-formatted string, passed to the Snippet call, to log with the page hit. Gets processed with `$modx->fromJSON`, failing which nothing will be logged. Nested objects will be removed to limit logged data to 'allowedDataKeys' only.
+- 'allowedDataKeys' | (string) | '' | comma-separated list of allowed keys in the array of data to log. This is required to  log any custom data, if 'usePostVars' is true.
+- 'logData' | (string) | '' | JSON-formatted string, passed to the Snippet call, to log with the page hit. Gets processed with `$modx->fromJSON`, failing which nothing will be logged. Nested objects will be removed to limit logged data to 'allowedDataKeys' only.
 - 'skipCrawlers' | (bool) | true | flag to enable/disable checking for crawlers before logging page view
 - 'skipUAs' | (string) | 'GoogleBot, Bingbot, Slurp, Yahoo, DuckDuckBot, Baiduspider, YandexBot, Sogou, Exabot, Konqueror, facebot, facebookexternalhit, ia_archiver, wget' https://www.keycdn.com/blog/web-crawlers/ | comma-separated list of user agent strings to detect
 - 'ipThrottle' | (int) | 30 | number of requests per minute at which to throttle logging of page views from the same IP address
@@ -43,15 +43,15 @@ This Snippet operates in 4 "modes" (see below) depending on properties defined.
 
 Properties:
 
-- 'separator' | (string) | empty string | output separator
-- 'toPlaceholder' | (string) | empty string | key of placeholder to which to send output instead of returning
+- 'separator' | (string) | '' | output separator
+- 'toPlaceholder' | (string) | '' | key of placeholder to which to send output instead of returning
 - 'resource' | (int) | 0 | affects operation mode. Scopes returned data to a specific Resource.
-- 'tpl' | (string) | empty string | setting this affects operation mode, and formats each item in the result set with the named Chunk
+- 'tpl' | (string) | '' | setting this affects operation mode, and formats each item in the result set with the named Chunk
 - 'limit' | (int) | 20 | limit the number of results returned
 - 'sortDir' | (string) | 'DESC' | order by most page views or least page views, or datetime, depending on mode
-- 'fromDate' | (string) | empty string | use English textual description of the start date, after which page views will be returned. See http://php.net/manual/en/function.strtotime.php for examples.
-- 'toDate' | (string) | 'now' | use English textual description of the end date, before which page views will be returned. See http://php.net/manual/en/function.strtotime.php for examples.
-- 'exclude' | (string) | empty string | comma-separated list of Resource IDs to explicitly exclude. Only used for mode 00
+- 'fromDate' | (string) | '' | use English textual description of the start date, after which page views will be returned. See http://php.net/manual/en/function.strtotime.php for examples.
+- 'toDate' | (string) | '' | use English textual description of the end date, before which page views will be returned. See http://php.net/manual/en/function.strtotime.php for examples.
+- 'exclude' | (string) | '' | comma-separated list of Resource IDs to explicitly exclude. Only used for mode 00
 
 #### Possible Return Values
 
@@ -85,7 +85,7 @@ If a Chunk name is provided in the 'tpl' property, the following placeholders ar
 - 'resource' | ID of viewed Resource
 - 'datetime' | datetime at which this particular view was tracked
 - 'data' | use dot notation for placeholder keys, to access logged data properties. For example: `[[+data.goodkey]]`
-- 'ip' is unset 
+- 'ip' is unset
 
 ## Example Usage
 
