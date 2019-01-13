@@ -63,12 +63,12 @@ $c = $modx->newQuery('MPPageViews');
 if (!empty($fromDate)) {
     /* convert to string for mysql */
     $fromDate = strftime("%F %T", $fromDate);
-    $c->where(['datetime:>=' => $fromDate]);
+    if ($fromDate) $c->where(['datetime:>=' => $fromDate]);
 }
 if (!empty($toDate)) {
     /* convert to string for mysql */
     $toDate = strftime("%F %T", $toDate);
-    $c->where(['datetime:<' => $toDate]);
+    if ($toDate) $c->where(['datetime:<' => $toDate]);
 }
 
 // MODE
