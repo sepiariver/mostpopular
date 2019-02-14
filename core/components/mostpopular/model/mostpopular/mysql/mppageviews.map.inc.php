@@ -39,8 +39,7 @@ $xpdo_meta_map['MPPageViews']= array (
     ),
     'data' => 
     array (
-      'dbtype' => 'varchar',
-      'precision' => '16378',
+      'dbtype' => 'text',
       'phptype' => 'json',
       'default' => '[]',
     ),

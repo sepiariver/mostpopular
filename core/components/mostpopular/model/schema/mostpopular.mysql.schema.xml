@@ -27,8 +27,7 @@
             index="index" />
         <field
             key="data"
-            dbtype="varchar"
-            precision="16378"
+            dbtype="text"
             phptype="json"
             default="[]" />
         <field

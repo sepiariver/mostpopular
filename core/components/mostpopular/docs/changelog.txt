@@ -1,3 +1,7 @@
+MostPopular 1.0.2-beta1
+=====================
+Make table creation more reliable.
+
 MostPopular 1.0.1-beta1
 =====================
 Explicitly exclude Resources by ID.
